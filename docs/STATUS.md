@@ -223,6 +223,27 @@ The course checker was not part of the known results. `sh .hackathon/setup.sh --
 - The tactical dashboard currently requests dataset-wide formation summaries. The endpoint can instead group by coverage or dropback and filter by team/week; game/play-specific tactical summaries are not implemented.
 - Processed data is generated and local. Deployment to an ephemeral host would require source restoration and ETL at startup and remains out of scope.
 
+## Event submission mode
+
+The event's `--entregar` checker was rerun successfully on the current tree. Result: 185 archive entries, 171.3 MB, fixed event stack, dashboard build, backend import, routes, README visual, credentials scan, and ZIP integrity all passed without warnings. Upload `../entrega-hackathon-unam-20261120-1237.zip`; do not upload the earlier 722.2 MB archive.
+
+To prevent duplicated generated data in submissions while keeping the complete local app usable, `data/processed` and `data/reports` are local symbolic links to sibling storage under `../hackathon-unam-local-data/`; `data/raw` remains a real directory and its 126 source files remain in the event ZIP. The redundant source archive was moved to `../nfl-big-data-bowl-regional-event-data-main.zip`. None of these local storage locations are committed.
+
+The repository `.venv` currently contains exactly the event stack. DuckDB and Polars were removed only from the environment, not from source or lock files. In this mode FastAPI imports successfully, `/health` returns `status=ok` with `mode=static-demo`, and the built dashboard falls back to the bundled real play in `dashboard/public/demo.json` when full analytics return `503`.
+
+After submitting, restore full local analytics with:
+
+```sh
+.hackathon/.tools/uv/uv pip install --python .venv/bin/python -r etl/requirements.txt
+```
+
+Before generating another warning-free event ZIP, remove the optional packages again:
+
+```sh
+.hackathon/.tools/uv/uv pip uninstall --python .venv/bin/python duckdb polars polars-runtime-32
+sh .hackathon/setup.sh --entregar
+```
+
 ## Ignored and regenerated content
 
 `.gitignore` excludes `.venv/`, `.hackathon/.tools/`, `.hackathon/.cache/`, `.hackathon/.bootstrap/`, `node_modules/`, `dist/`, `dashboard/dist/`, Python caches, pytest/ruff caches, logs, delivery ZIPs, `.env*` except `.env.example`, keys, `.aws/`, DuckDB files/WALs, and all of `data/raw/`, `data/processed/`, and `data/reports/`.

@@ -18,9 +18,9 @@ setup-log.txt
 *.key
 .aws/
 # Data: raw inputs and generated outputs are never versioned (see etl/README.md)
-data/raw/
-data/processed/
-data/reports/
+data/raw
+data/processed
+data/reports
 # Tool caches
 .pytest_cache/
 .ruff_cache/

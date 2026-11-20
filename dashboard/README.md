@@ -32,8 +32,9 @@ The static output is written to `dashboard/dist`. If this directory exists when 
 
 1. Select a team, then a game, then a play.
 2. The field requests `api/plays/{gameId}/{playId}/tracking`.
-3. Tracking responses may contain row-per-player records or nested frame objects. The client normalizes both forms and plays frames at 10 Hz.
-4. Select a player on the field to inspect speed, direction, position, trails, and distances to nearby players.
+3. When the full API is available, the dashboard uses the complete processed dataset. On GitHub Pages, network failure, or a `503 data_unavailable` response, it uses `dashboard/public/demo.json`, a compact snapshot derived from the same real dataset.
+4. Tracking responses may contain row-per-player records or nested frame objects. The client normalizes both forms and plays frames at 10 Hz.
+5. Select a player on the field to inspect speed, direction, position, trails, and distances to nearby players.
 
 ## API routes
 

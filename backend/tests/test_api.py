@@ -18,7 +18,7 @@ def test_health_routes_and_localhost_cors() -> None:
     for path in ("/health", "/api/health"):
         response = client.get(path)
         assert response.status_code == 200
-        assert response.json()["status"] in {"ok", "degraded"}
+        assert response.json()["status"] == "ok"
     cors = client.options(
         "/api/games",
         headers={"Origin": "http://localhost:5173", "Access-Control-Request-Method": "GET"},
@@ -35,7 +35,9 @@ def test_missing_data_is_reported_without_crashing(monkeypatch: pytest.MonkeyPat
     monkeypatch.setenv("NFL_DATA_DIR", str(tmp_path))
     health = client.get("/api/health")
     assert health.status_code == 200
-    assert health.json()["status"] == "degraded"
+    assert health.json()["status"] == "ok"
+    assert health.json()["dataReady"] is False
+    assert health.json()["mode"] == "static-demo"
     unavailable = client.get("/api/overview")
     assert unavailable.status_code == 503
     assert unavailable.json()["code"] == "data_unavailable"

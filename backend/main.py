@@ -40,11 +40,14 @@ def unavailable_handler(_: Request, exc: DataUnavailable) -> JSONResponse:
 @app.get("/health", tags=["system"])
 @app.get("/api/health", tags=["system"])
 def health() -> dict:
-    with connection() as con:
-        tables = sorted(item[0] for item in con.execute("SHOW TABLES").fetchall())
+    try:
+        with connection() as con:
+            tables = sorted(item[0] for item in con.execute("SHOW TABLES").fetchall())
+    except DataUnavailable:
+        return {"status": "ok", "dataReady": False, "tables": [], "mode": "static-demo"}
     required = {"games", "plays", "players", "tracking"}
     ready = required.issubset(tables)
-    return {"status": "ok" if ready else "degraded", "dataReady": ready, "tables": tables}
+    return {"status": "ok", "dataReady": ready, "tables": tables, "mode": "full" if ready else "static-demo"}
 
 
 @app.get("/api/overview", tags=["analytics"])

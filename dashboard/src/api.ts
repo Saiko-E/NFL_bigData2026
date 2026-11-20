@@ -62,9 +62,16 @@ async function demoApi(path: string, signal?: AbortSignal): Promise<unknown> {
 export async function api<T = unknown>(path: string, signal?: AbortSignal): Promise<T> {
   const normalized = path.replace(/^\//, '')
   if (STATIC_DEMO) return demoApi(normalized, signal) as Promise<T>
-  const response = await fetch(normalized, { signal, headers: { Accept: 'application/json' } })
-  if (!response.ok) throw new Error(`${response.status} ${response.statusText}`)
-  return response.json() as Promise<T>
+  let response: Response
+  try {
+    response = await fetch(normalized, { signal, headers: { Accept: 'application/json' } })
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') throw error
+    return demoApi(normalized) as Promise<T>
+  }
+  if (response.ok) return response.json() as Promise<T>
+  if (response.status === 503) return demoApi(normalized) as Promise<T>
+  throw new Error(`${response.status} ${response.statusText}`)
 }
 
 export const query = (path: string, params: Record<string, string | number | undefined>) => {

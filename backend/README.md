@@ -2,6 +2,11 @@
 
 Read-only FastAPI service over the Parquet views defined by `etl/src/nfl_etl/catalog.py`. It opens an isolated in-memory DuckDB catalog per request, so concurrent requests do not share connection state and no database file can become stale.
 
+The service has two explicit modes:
+
+- **Full analytics:** install `etl/requirements.txt` and provide `data/processed`; all API endpoints query the complete dataset.
+- **Event/static demo:** with only the event's fixed Python stack, `/health` stays healthy, FastAPI serves `dashboard/dist`, and unavailable analytics endpoints return `503`. The dashboard then loads the bundled real-data snapshot from `dashboard/public/demo.json`.
+
 ## Run
 
 From the repository root:

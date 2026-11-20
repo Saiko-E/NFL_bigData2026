@@ -13,16 +13,19 @@ ETL_SRC = PROJECT_ROOT / "etl" / "src"
 if str(ETL_SRC) not in sys.path:
     sys.path.insert(0, str(ETL_SRC))
 
-from nfl_etl.catalog import connect  # noqa: E402
-
-
 class DataUnavailable(RuntimeError):
     """Raised when a required processed dataset does not exist."""
 
 
 @contextmanager
 def connection(*tables: str) -> Iterator[Any]:
-    """Create and always close an isolated, request-safe catalog connection."""
+    """Create an isolated catalog connection, or report missing optional ETL dependencies."""
+    try:
+        from nfl_etl.catalog import connect
+    except (ImportError, ModuleNotFoundError) as exc:
+        raise DataUnavailable(
+            "Full analytics data is unavailable; use the bundled static demo or install etl/requirements.txt"
+        ) from exc
     con = connect(only=list(tables) or None)
     try:
         available = {row[0] for row in con.execute("SHOW TABLES").fetchall()}
