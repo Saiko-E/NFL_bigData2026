@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { api, asArray, number, pick, query, shortNumber, type JsonRecord } from './api'
+import { api, asArray, number, pick, query, shortNumber, STATIC_DEMO, type JsonRecord } from './api'
 import FootballField, { normalizeTracking, type TrackingFrame } from './FootballField'
 import { ComparisonView, MatchupsView, TacticsView } from './AnalyticsViews'
 
@@ -83,7 +83,7 @@ export default function App() {
         {tabs.map(item => <button key={item.id} onClick={() => { setTab(item.id); setMobileNav(false) }} className={`nav-item ${tab === item.id ? 'active' : ''}`}><span className="w-5 text-center text-base">{item.icon}</span>{item.label}{tab === item.id && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-sky-300"/>}</button>)}
       </nav>
       <div className="mx-3 mt-auto rounded-xl border border-white/5 bg-white/[.025] p-3">
-        <div className="flex items-center gap-2"><span className={`h-2 w-2 rounded-full ${apiOnline ? 'bg-emerald-400' : apiOnline === false ? 'bg-rose-400' : 'bg-amber-300'} ${apiOnline ? 'shadow-[0_0_8px_#34d399]' : ''}`}/><p className="text-xs font-medium text-slate-300">{apiOnline ? 'Data service online' : apiOnline === false ? 'Data service offline' : 'Checking service'}</p></div><p className="mt-1 pl-4 text-[10px] text-slate-600">Relative /api connection</p>
+        <div className="flex items-center gap-2"><span className={`h-2 w-2 rounded-full ${apiOnline ? 'bg-emerald-400' : apiOnline === false ? 'bg-rose-400' : 'bg-amber-300'} ${apiOnline ? 'shadow-[0_0_8px_#34d399]' : ''}`}/><p className="text-xs font-medium text-slate-300">{apiOnline ? (STATIC_DEMO ? 'Static data demo' : 'Data service online') : apiOnline === false ? 'Data service offline' : 'Checking service'}</p></div><p className="mt-1 pl-4 text-[10px] text-slate-600">{STATIC_DEMO ? 'Real play · 2021 Week 1' : 'Relative /api connection'}</p>
       </div>
       <div className="px-5 py-5 text-[10px] text-slate-700">UNAM · NFL Analytics Lab</div>
     </aside>

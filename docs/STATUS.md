@@ -40,6 +40,7 @@ Processed data stays local. A fresh clone does not contain raw CSVs, generated P
 
 - Responsive dark dashboard with desktop/mobile navigation, loading/empty/error states, API status, overview metrics and chart, and team -> game -> play selectors.
 - Relative API client and Vite `/api` proxy; portable `base: './'` production assets.
+- GitHub Pages deployment in `.github/workflows/pages.yml`; because Pages is static, `dashboard/public/demo.json` contains one real observed play (43 frames / 989 tracking rows), 54 player summaries, five PFF matchups, and actual tactical aggregates. The full local app still requires FastAPI and the ignored processed data.
 
 ### Phase 4: complete for the accelerated scope
 
@@ -108,7 +109,9 @@ Do not expand these items into unrelated refactors. Finish one vertical feature 
 | `dashboard/src/AnalyticsViews.tsx` | Matchup, comparison, and tactical views |
 | `dashboard/src/api.ts` | Relative API client and response adapters |
 | `dashboard/vite.config.ts` | Relative build base and local API proxy |
-| `dashboard/README.md` | Dashboard run/build notes |
+| `dashboard/README.md` | Dashboard run/build notes and GitHub Pages demo link |
+| `dashboard/public/demo.json` | Small committed real-data snapshot for static GitHub Pages only |
+| `.github/workflows/pages.yml` | Builds and deploys the static dashboard demo |
 | `data/raw/` | Restored source CSVs; ignored |
 | `data/processed/` | Generated Parquet; ignored |
 | `data/reports/` | Generated quality reports; ignored |

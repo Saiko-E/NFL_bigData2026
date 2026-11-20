@@ -2,6 +2,12 @@
 
 Dark, responsive React dashboard for exploring NFL tracking data and analytics.
 
+## GitHub Pages demo
+
+`https://saiko-e.github.io/NFL_bigData2026/`
+
+GitHub Pages cannot run FastAPI or DuckDB, so this static demo bundles one real observed play (`2021090900/97`), its 43 tracking frames, 54 player summaries, five PFF matchups, and real tactical aggregates. The local application uses the complete dataset and API. `.github/workflows/pages.yml` rebuilds and deploys this demo after dashboard changes on `main`.
+
 ## Run locally
 
 Install once on a fresh clone, then start Vite:
