@@ -1,87 +1,46 @@
-# Hackathon NFL UNAM
+# NFL Tracking Analytics
 
-A FastAPI backend and a React dashboard built on the NFL Big Data Bowl regional event data.
+Local-first web app for exploring NFL player tracking data from the Big Data Bowl 2023 regional dataset (2021 season, weeks 1-8, pass plays). Built in phases; the current state is in `docs/STATUS.md`.
+
+| Phase | Status |
+|---|---|
+| 1. Data engineering (ETL, Parquet, quality reports) | done |
+| 2. Analytics API | next |
+| 3-6. Dashboard, interactive field, advanced analytics, release | planned (`docs/ROADMAP.md`) |
 
 ## Project layout
 
 ```
-backend/     Python API (FastAPI)
-dashboard/   Frontend (React + Vite + Tailwind)
-data/        Event datasets
-.hackathon/  Setup scripts and course tooling
-.kiro/       Kiro steering and settings
+etl/         data pipeline (src/nfl_etl, tests, scripts/etl.py) and its README
+backend/     FastAPI app (main.py with /health; the API arrives in Phase 2)
+dashboard/   React + TypeScript + Vite frontend
+data/        raw/ (input CSVs), processed/ (Parquet), reports/ (quality reports); all git-ignored
+docs/        ROADMAP.md, STATUS.md, DATA_DICTIONARY.md
+.kiro/       steering files (project.md, rules.md)
+.hackathon/  event setup scripts (do not move)
 ```
 
-## Requirements
+## Quick start
 
-- Python 3.12.12 (managed by `uv`)
-- `uv` 0.11.19
-- Node.js 22.23.1 with npm 10
-
-The exact versions are listed in `.hackathon/stack.json`.
-
-## Setup in a new environment
-
-### Option A: course installer (recommended)
-
-macOS / Linux:
+Requirements: Python 3.11+ and Node 22 (versions used: `.hackathon/stack.json`).
 
 ```sh
+# 1. Environment (course installer, creates .venv/)
 sh .hackathon/setup.sh
+.hackathon/.tools/uv/uv pip install --python .venv/bin/python -r etl/requirements.txt
+
+# 2. Put the dataset files in data/raw/ (see etl/README.md), then build the data
+.venv/bin/python etl/scripts/etl.py run          # about 35 s
+.venv/bin/python etl/scripts/etl.py validate
+.venv/bin/python -m pytest etl/tests
+
+# 3. Existing backend and dashboard shells
+.venv/bin/uvicorn backend.main:app --reload       # http://localhost:8000/health
+cd dashboard && npm ci && npm run dev
 ```
 
-Windows:
+Full ETL commands, outputs and troubleshooting: `etl/README.md`. Column definitions and data limits: `docs/DATA_DICTIONARY.md`.
 
-```bat
-.hackathon\setup.cmd
-```
+## Data and limits
 
-The installer creates `.venv/` and installs the pinned Python packages and the Node tooling.
-
-### Option B: manual setup
-
-Python backend:
-
-```sh
-uv venv --python 3.12.12 .venv
-uv pip install --python .venv -r .hackathon/requirements.txt
-```
-
-Dashboard:
-
-```sh
-cd dashboard
-npm ci
-```
-
-## Running the project
-
-Backend (API on port 8000):
-
-```sh
-.venv/bin/uvicorn backend.main:app --reload
-```
-
-Check it at `http://localhost:8000/health`.
-
-Dashboard (development server):
-
-```sh
-cd dashboard
-npm run dev
-```
-
-Build the dashboard for production:
-
-```sh
-cd dashboard
-npm run build
-```
-
-## Credentials
-
-Copy `.env.example` to `.env` and fill in the values. `.env` is ignored by git and must never be committed.
-
-## Data
-
-The event data is in `data/` and in `nfl-big-data-bowl-regional-event-data-main/data/`. See the data documentation in `nfl-big-data-bowl-regional-event-data-main/README.md` for the meaning of each file and its keys.
+Only the sample data is used: no external sources and no invented statistics. Results describe pass plays from 8 weeks of 2021, not a full season. Credentials go in `.env` (copy `.env.example`); it is never committed.
