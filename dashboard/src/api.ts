@@ -40,19 +40,41 @@ export const STATIC_DEMO = window.location.hostname.endsWith('github.io') || new
 let demoPromise: Promise<JsonRecord> | null = null
 
 async function demoApi(path: string, signal?: AbortSignal): Promise<unknown> {
-  demoPromise ??= fetch('demo.json', { signal }).then(response => {
+  demoPromise ??= fetch('demo/index.json').then(response => {
     if (!response.ok) throw new Error('Static demo data is unavailable')
     return response.json() as Promise<JsonRecord>
   })
   const demo = await demoPromise
-  const route = path.split('?')[0]
+  const [route, search = ''] = path.split('?')
+  const params = new URLSearchParams(search)
+  const paged = (items: JsonRecord[]) => ({ items, total: items.length, limit: 500, offset: 0 })
   if (route === 'api/overview') return demo.overview
-  if (route === 'api/teams') return { items: demo.teams, total: asArray(demo.teams).length, limit: 100, offset: 0 }
-  if (route === 'api/games') return { items: demo.games, total: asArray(demo.games).length, limit: 100, offset: 0 }
-  if (route === 'api/players') return { items: demo.players, total: asArray(demo.players).length, limit: 100, offset: 0 }
-  if (route === 'api/plays') return { items: demo.plays, total: asArray(demo.plays).length, limit: 100, offset: 0 }
-  if (route.endsWith('/tracking')) return demo.tracking
-  if (route.endsWith('/matchups')) return demo.matchups
+  if (route === 'api/teams') return paged(asArray(demo.teams))
+  if (route === 'api/games') {
+    const team = params.get('team') || params.get('teamAbbr')
+    const items = asArray(demo.games).filter(game => !team || [pick(game, ['homeTeamAbbr']), pick(game, ['visitorTeamAbbr'])].includes(team))
+    return paged(items)
+  }
+  if (route === 'api/players') {
+    const team = params.get('team')
+    const items = asArray(demo.players).filter(player => !team || pick(player, ['teams']).split(',').includes(team))
+    return paged(items)
+  }
+  if (route === 'api/plays') {
+    const gameId = params.get('gameId') || params.get('game_id')
+    const items = asArray(demo.plays).filter(play => !gameId || pick(play, ['gameId']) === gameId)
+    return paged(items)
+  }
+  const playRoute = route.match(/^api\/plays\/(\d+)\/(\d+)\/(tracking|matchups)$/)
+  if (playRoute) {
+    const key = `${playRoute[1]}-${playRoute[2]}`
+    if (playRoute[3] === 'tracking') {
+      const response = await fetch(`demo/tracking/${key}.json`, { signal })
+      if (!response.ok) throw new Error('Tracking is unavailable for this curated play')
+      return response.json()
+    }
+    return (demo.matchups as JsonRecord)?.[key] ?? { matchups: [], total: 0 }
+  }
   if (route === 'api/analytics/tactics') return demo.tactics
   const player = route.match(/^api\/players\/(\d+)\/stats$/)
   if (player) return (demo.playerStats as JsonRecord)?.[player[1]] ?? {}
