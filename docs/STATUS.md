@@ -4,7 +4,7 @@
 
 **State:** Phases 1-4 are implemented. Phase 5 is partial. Phase 6 local integration is verified: 32 Python tests, 20/20 real-data checks, production dashboard build, and targeted replay/API smoke tests pass.
 
-**Git:** branch `main`; current base commit `9c8c2e9` (`phase 1`), also `origin/main` when inspected. The Phase 2-6 implementation and these documentation updates are ready for the final commit. Run `git status --short --branch` after resuming because working-tree details can change.
+**Git:** branch `main`; implementation commit `978a080` (`Build NFL tracking analytics API and dashboard`) was pushed to `origin/main`. A later documentation-only handoff commit may be `HEAD`; use `git log -1 --oneline` to confirm the clone's exact current commit.
 
 ## Purpose and architecture
 
