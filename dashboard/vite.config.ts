@@ -1,5 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// base './' para que el build funcione desde cualquier ruta
-export default defineConfig({ base: './', plugins: [react()] })
+// Relative assets keep static builds portable; API calls proxy to the local service in development.
+export default defineConfig({
+  base: './',
+  plugins: [react()],
+  server: {
+    proxy: {
+      '/api': { target: 'http://localhost:8000', changeOrigin: true },
+    },
+  },
+})
